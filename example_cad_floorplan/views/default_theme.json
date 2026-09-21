@@ -1,0 +1,111 @@
+{
+  "theme_id": "default_cad_standard",
+  "theme_name": "Standard Architectural CAD Plan Theme",
+  "spec_version": "0.1.0",
+  "description": "Standard printing/plotter theme for arch_floorplan_v0.1. Follows typical 2D plan-view CAD conventions: heavy load-bearing walls, hatched sections, labeled openings. All key names match manifest.profile.view_style_schema of profile arch_floorplan_v0.1.",
+  "fallback": {
+    "stroke_color_hex": "#1F2937",
+    "line_weight_mm": 0.13,
+    "line_dash_code": "solid",
+    "fill_color_hex": "#FFFFFF00",
+    "hatch_ordinal": 0,
+    "hatch_scale": 8,
+    "label_text_template": "",
+    "label_font_size_mm": 2.5,
+    "label_anchor_ordinal": 0
+  },
+  "by_type": {
+    "container_root": {
+      "stroke_color_hex": "#9CA3AF",
+      "line_weight_mm": 0.09,
+      "line_dash_code": "dashed_long",
+      "label_text_template": "{{label}}",
+      "label_font_size_mm": 5,
+      "label_anchor_ordinal": 5
+    },
+    "ground": {
+      "stroke_color_hex": "#374151",
+      "line_weight_mm": 0.25,
+      "fill_color_hex": "#F3F4F6",
+      "hatch_ordinal": 7,
+      "hatch_scale": 20,
+      "label_text_template": "{{label}} | {{material_code}}",
+      "label_font_size_mm": 2.5,
+      "label_anchor_ordinal": 0
+    },
+    "ceiling": {
+      "stroke_color_hex": "#6B7280",
+      "line_weight_mm": 0.18,
+      "line_dash_code": "dashed_short",
+      "fill_color_hex": "#E5E7EB33",
+      "hatch_ordinal": 4,
+      "hatch_scale": 40,
+      "label_text_template": "{{label}}",
+      "label_font_size_mm": 2.0,
+      "label_anchor_ordinal": 0
+    },
+    "wall": {
+      "_comment": "Per-type baseline; by_id rules below override for load-bearing vs partition walls.",
+      "stroke_color_hex": "#111827",
+      "line_weight_mm": 0.35,
+      "fill_color_hex": "#E5E7EB",
+      "hatch_ordinal": 6,
+      "hatch_scale": 12,
+      "label_text_template": "{{label}} | {{thickness_mm}}mm",
+      "label_font_size_mm": 2.0,
+      "label_anchor_ordinal": 0
+    },
+    "window": {
+      "stroke_color_hex": "#1F2937",
+      "line_weight_mm": 0.25,
+      "line_dash_code": "solid",
+      "fill_color_hex": "#DBEAFE40",
+      "hatch_ordinal": 5,
+      "hatch_scale": 5,
+      "label_text_template": "Окно {{width_mm}}×{{height_mm}} {{glazing_type}}",
+      "label_font_size_mm": 2.0,
+      "label_anchor_ordinal": 0
+    },
+    "door": {
+      "stroke_color_hex": "#111827",
+      "line_weight_mm": 0.30,
+      "line_dash_code": "solid",
+      "fill_color_hex": "#FEF3C7",
+      "hatch_ordinal": 0,
+      "label_text_template": "Дверь {{width_mm}}×{{height_mm}} {{handle_side}}",
+      "label_font_size_mm": 2.0,
+      "label_anchor_ordinal": 0
+    }
+  },
+  "by_id": {
+    "wall_s": {
+      "_comment": "External load-bearing -> thicker line + concrete hatch",
+      "line_weight_mm": 0.70,
+      "hatch_ordinal": 7,
+      "hatch_scale": 15
+    },
+    "wall_n": {
+      "_comment": "External load-bearing -> thicker line + concrete hatch",
+      "line_weight_mm": 0.70,
+      "hatch_ordinal": 7,
+      "hatch_scale": 15
+    },
+    "wall_e": {
+      "_comment": "External load-bearing + contains window",
+      "line_weight_mm": 0.70,
+      "hatch_ordinal": 7,
+      "hatch_scale": 15
+    },
+    "wall_w": {
+      "_comment": "Internal gypsum partition: lighter fill, thin hatch",
+      "fill_color_hex": "#F9FAFB",
+      "hatch_ordinal": 3,
+      "hatch_scale": 18,
+      "line_weight_mm": 0.30
+    },
+    "door_01": {
+      "_comment": "Selected/highlighted door for demo",
+      "fill_color_hex": "#FDE68A"
+    }
+  }
+}

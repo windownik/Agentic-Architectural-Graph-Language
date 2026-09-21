@@ -1,0 +1,165 @@
+{
+  "chunk_id": "chunk_genesis",
+  "version": 1,
+  "bounds": [0, 0, 0, 4000, 5000, 2800],
+  "nodes": {
+    "env_001": {
+      "parent_id": "genesis",
+      "coords": [0, 0, 0, 4000, 5000, 2800],
+      "relations": [],
+      "metadata": {
+        "profile_type": "container_root",
+        "label": "Жилая комната 1 этаж",
+        "project_code": "DEMO-001",
+        "floor_index": 0
+      }
+    },
+    "ground_01": {
+      "parent_id": "env_001",
+      "coords": [0, 0, 0, 4000, 5000, 150],
+      "relations": [],
+      "metadata": {
+        "profile_type": "ground",
+        "label": "Стяжка пола",
+        "material_code": "concrete_screed",
+        "finish_code": "laminate_32_oak"
+      }
+    },
+    "ceil_01": {
+      "parent_id": "env_001",
+      "coords": [0, 0, 2700, 4000, 5000, 2800],
+      "relations": [],
+      "metadata": {
+        "profile_type": "ceiling",
+        "label": "Натяжной потолок",
+        "material_code": "stretch_matte_pvc",
+        "finish_code": "paint_matte_ral9010"
+      }
+    },
+    "wall_s": {
+      "parent_id": "env_001",
+      "coords": [
+        0,    0, 0,
+        4000, 0, 0,
+        4000, 0, 2800,
+        0,    0, 2800
+      ],
+      "relations": [],
+      "metadata": {
+        "profile_type": "wall",
+        "label": "Наружная стена Южная",
+        "material_code": "aerated_concrete_380",
+        "thickness_mm": 380,
+        "is_load_bearing": true,
+        "is_external": true
+      }
+    },
+    "wall_n": {
+      "parent_id": "env_001",
+      "coords": [
+        0,    5000, 0,
+        4000, 5000, 0,
+        4000, 5000, 2800,
+        0,    5000, 2800
+      ],
+      "relations": [],
+      "metadata": {
+        "profile_type": "wall",
+        "label": "Наружная стена Северная",
+        "material_code": "aerated_concrete_380",
+        "thickness_mm": 380,
+        "is_load_bearing": true,
+        "is_external": true
+      }
+    },
+    "wall_w": {
+      "parent_id": "env_001",
+      "coords": [
+        0, 0,    0,
+        0, 5000, 0,
+        0, 5000, 2800,
+        0, 0,    2800
+      ],
+      "relations": [],
+      "metadata": {
+        "profile_type": "wall",
+        "label": "Перегородка Западная",
+        "material_code": "partition_gkl_120",
+        "thickness_mm": 120,
+        "is_load_bearing": false,
+        "is_external": false
+      }
+    },
+    "wall_e": {
+      "parent_id": "env_001",
+      "coords": [
+        4000, 0,    0,
+        4000, 5000, 0,
+        4000, 5000, 2800,
+        4000, 0,    2800
+      ],
+      "relations": [],
+      "metadata": {
+        "profile_type": "wall",
+        "label": "Наружная стена Восточная",
+        "material_code": "aerated_concrete_380",
+        "thickness_mm": 380,
+        "is_load_bearing": true,
+        "is_external": true
+      }
+    },
+    "win_01": {
+      "parent_id": "wall_e",
+      "coords": [
+        4000, 2000, 900,
+        4000, 3500, 900,
+        4000, 3500, 2100,
+        4000, 2000, 2100
+      ],
+      "relations": [
+        {
+          "target": "wall_e",
+          "target_chunk": "chunk_genesis",
+          "rel_type": "dependent"
+        }
+      ],
+      "metadata": {
+        "profile_type": "window",
+        "label": "Окно Восточное 1.5x1.2",
+        "frame_material": "pvc_white",
+        "glazing_type": "double",
+        "sill_height_mm": 900,
+        "width_mm": 1500,
+        "height_mm": 1200,
+        "sash_count": 2
+      }
+    },
+    "door_01": {
+      "parent_id": "wall_w",
+      "coords": [
+        0, 500,  0,
+        0, 1400, 0,
+        0, 1400, 2100,
+        0, 500,  2100
+      ],
+      "relations": [
+        {
+          "target": "wall_w",
+          "target_chunk": "chunk_genesis",
+          "rel_type": "dependent"
+        }
+      ],
+      "metadata": {
+        "profile_type": "door",
+        "label": "Межкомнатная дверь",
+        "leaf_material": "mdf_veneered",
+        "frame_material": "wood_mdf",
+        "width_mm": 900,
+        "height_mm": 2100,
+        "direction": "inward",
+        "handle_side": "right",
+        "threshold_mm": 15
+      }
+    }
+  }
+}

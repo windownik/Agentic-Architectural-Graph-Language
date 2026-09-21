@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aagl.dev/profiles/arch_floorplan_v0.1/schema.json",
+  "title": "AAGL Profile — Architectural Floorplan v0.1",
+  "description": "Profile-level schema for 2D/3D architectural floor plans. Defines node discriminators, coords layouts, and metadata contracts for: ground, wall, window, ceiling, door. Container-level fields (parent_id, coords, relations, metadata) are validated separately by universal-graph.json.",
+  "version": "0.1.0",
+  "definitions": {
+    "profile_type": {
+      "type": "string",
+      "enum": ["container_root", "ground", "wall", "window", "ceiling", "door"],
+      "description": "Discriminator key routed via manifest.profile.view_type_key = metadata.profile_type."
+    },
+    "node_container_root": {
+      "type": "object",
+      "required": ["profile_type"],
+      "properties": {
+        "profile_type": { "const": "container_root" },
+        "label": { "type": "string" },
+        "project_code": { "type": "string" },
+        "floor_index": { "type": "integer", "minimum": -20, "maximum": 200, "description": "0 = ground floor. -1 = basement 1." }
+      },
+      "additionalProperties": false
+    },
+    "node_ground": {
+      "type": "object",
+      "required": ["profile_type", "material_code"],
+      "properties": {
+        "profile_type": { "const": "ground" },
+        "label": { "type": "string", "examples": ["Черновой пол", "Пол кухни"] },
+        "material_code": {
+          "type": "string",
+          "examples": ["concrete_screed", "laminate_32", "tile_ceramic_porcelain"]
+        },
+        "finish_code": {
+          "type": "string",
+          "description": "Optional finish/layer on top of material.",
+          "examples": ["epoxy_clear", "parquet_oak_rustic"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "node_wall": {
+      "type": "object",
+      "required": ["profile_type", "material_code", "thickness_mm"],
+      "properties": {
+        "profile_type": { "const": "wall" },
+        "label": { "type": "string", "examples": ["Несущая стена M2", "Перегородка"] },
+        "material_code": {
+          "type": "string",
+          "examples": ["brick_250_ceramic", "aerated_concrete_300", "partition_gkl_100"]
+        },
+        "thickness_mm": { "type": "integer", "minimum": 40, "maximum": 1000, "examples": [100, 250, 300] },
+        "is_load_bearing": { "type": "boolean", "default": false },
+        "is_external": { "type": "boolean", "default": false, "description": "True for outer/weather-exposed walls." }
+      },
+      "additionalProperties": false
+    },
+    "node_window": {
+      "type": "object",
+      "required": ["profile_type", "frame_material", "glazing_type", "sill_height_mm", "width_mm", "height_mm"],
+      "properties": {
+        "profile_type": { "const": "window" },
+        "label": { "type": "string", "examples": ["Окно кухни 1.5x1.2"] },
+        "frame_material": {
+          "type": "string",
+          "enum": ["pvc_white", "pvc_woodgrain", "aluminum_anodized", "wood_oak", "wood_pine"]
+        },
+        "glazing_type": { "type": "string", "enum": ["single", "double", "triple"] },
+        "sill_height_mm": { "type": "integer", "minimum": 0, "maximum": 2500, "description": "Distance from finished floor to bottom of window glass.", "default": 900 },
+        "width_mm": { "type": "integer", "minimum": 200, "maximum": 6000 },
+        "height_mm": { "type": "integer", "minimum": 300, "maximum": 4000 },
+        "sash_count": { "type": "integer", "minimum": 1, "maximum": 5, "default": 1 }
+      },
+      "additionalProperties": false
+    },
+    "node_ceiling": {
+      "type": "object",
+      "required": ["profile_type", "material_code"],
+      "properties": {
+        "profile_type": { "const": "ceiling" },
+        "label": { "type": "string", "examples": ["Натяжной потолок", "Подшивной ГКЛ"] },
+        "material_code": {
+          "type": "string",
+          "examples": ["suspended_gkl_12.5", "stretch_matte_pvc", "plastered_monolith"]
+        },
+        "finish_code": {
+          "type": "string",
+          "examples": ["paint_matte_ral9010", "gloss_white_laminate"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "node_door": {
+      "type": "object",
+      "required": ["profile_type", "leaf_material", "frame_material", "width_mm", "height_mm", "direction", "handle_side"],
+      "properties": {
+        "profile_type": { "const": "door" },
+        "label": { "type": "string", "examples": ["Входная дверь", "Межкомнатная 27"] },
+        "leaf_material": {
+          "type": "string",
+          "enum": ["mdf_veneered", "solid_oak", "solid_pine", "glass_tempered", "steel_armored"]
+        },
+        "frame_material": {
+          "type": "string",
+          "enum": ["wood_mdf", "wood_solid", "aluminum", "steel"]
+        },
+        "width_mm": { "type": "integer", "minimum": 500, "maximum": 2000 },
+        "height_mm": { "type": "integer", "minimum": 1800, "maximum": 2700 },
+        "direction": { "type": "string", "enum": ["inward", "outward"] },
+        "handle_side": { "type": "string", "enum": ["left", "right"] },
+        "threshold_mm": { "type": "integer", "minimum": 0, "maximum": 120, "default": 15, "description": "0 = flush/threshold-free." }
+      },
+      "additionalProperties": false
+    },
+    "metadata_discriminator": {
+      "type": "object",
+      "required": ["profile_type"],
+      "properties": {
+        "profile_type": { "$ref": "#/definitions/profile_type" }
+      }
+    }
+  },
+  "type": "object",
+  "title": "Root-node profile validator (applied per node)",
+  "description": "This schema is the profile's validation contract. For each node in any chunk, extract node.metadata and validate against the oneOf branch selected by node.metadata.profile_type.",
+  "oneOf": [
+    { "$ref": "#/definitions/node_container_root" },
+    { "$ref": "#/definitions/node_ground" },
+    { "$ref": "#/definitions/node_wall" },
+    { "$ref": "#/definitions/node_window" },
+    { "$ref": "#/definitions/node_ceiling" },
+    { "$ref": "#/definitions/node_door" }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "spec_version": "0.1.0",
+  "project_name": "cad_sample_room_01",
+  "state_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "global_version": 1,
+  "profile": {
+    "id": "arch_floorplan_v0.1",
+    "schema_path": "./schema.json",
+    "view_type_key": "metadata.profile_type",
+    "view_style_schema": {
+      "_comment": "arch_floorplan_v0.1 style-rule contract. Every by_type/by_id/fallback object in views/*.json may declare any subset of these keys.",
+      "stroke_color_hex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$", "description": "Outline stroke color (#RRGGBB or #RRGGBBAA)." },
+      "line_weight_mm":   { "type": "number", "minimum": 0.05, "maximum": 5.0, "description": "Plotter pen width for this element." },
+      "line_dash_code":   { "type": "string", "enum": ["solid", "dashed_short", "dashed_long", "dotdash", "dotted"], "description": "Line dash pattern." },
+      "fill_color_hex":   { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$", "description": "Area fill color." },
+      "hatch_ordinal":    { "type": "integer", "minimum": 0, "maximum": 7, "description": "0=none, 1=diag/, 2=diag\\, 3=cross, 4=horiz, 5=vert, 6=brick, 7=concrete." },
+      "hatch_scale":      { "type": "number", "minimum": 0.5, "maximum": 50, "description": "Hatch pattern scale factor (mm per pattern unit)." },
+      "label_text_template": { "type": "string", "description": "Mustache-ish template referencing metadata paths, e.g. '{{label}} | {{material_code}}'. Empty string = no label." },
+      "label_font_size_mm":  { "type": "number", "minimum": 0.5, "maximum": 50, "description": "Printed label font size in mm." },
+      "label_anchor_ordinal": { "type": "integer", "minimum": 0, "maximum": 8, "description": "0=center 1=TL 2=TR 3=BL 4=BR 5=T 6=B 7=L 8=R." }
+    },
+    "core_hints": {
+      "relation_codes": ["directed", "symmetric", "control", "dependent"],
+      "coords_layout_registry": {
+        "container_root": "aabb_3d:6",
+        "ground":   "aabb_3d:6",
+        "ceiling":  "aabb_3d:6",
+        "wall":     "quadrilateral_3d_4pt:12",
+        "window":   "quadrilateral_3d_4pt:12",
+        "door":     "quadrilateral_3d_4pt:12",
+        "_comment_aabb_3d": "6 i64 = [x_min,y_min,z_min, x_max,y_max,z_max]",
+        "_comment_quad_3d": "12 i64 = 4 vertices of a planar 3D quad: p1x,p1y,p1z, p2x,p2y,p2z, p3x,p3y,p3z, p4x,p4y,p4z. Must be coplanar and closed (p4→p1)."
+      }
+    },
+    "extensions": {}
+  },
+  "units": {
+    "base_unit": "mm",
+    "internal_resolution_to_meters": 0.001
+  },
+  "chunks": {
+    "chunk_genesis": {
+      "path": "./chunks/chunk_genesis.json",
+      "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "version": 1
+    }
+  },
+  "views": {
+    "active_theme": "default_cad_standard",
+    "registered": {
+      "default_cad_standard": {
+        "path": "./views/default_theme.json",
+        "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "version": 1
+      }
+    }
+  },
+  "spatial_index": {
+    "env_001":   "chunk_genesis",
+    "ground_01": "chunk_genesis",
+    "ceil_01":   "chunk_genesis",
+    "wall_s":    "chunk_genesis",
+    "wall_n":    "chunk_genesis",
+    "wall_w":    "chunk_genesis",
+    "wall_e":    "chunk_genesis",
+    "win_01":    "chunk_genesis",
+    "door_01":   "chunk_genesis"
+  }
+}
