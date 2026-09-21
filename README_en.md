@@ -18,15 +18,20 @@
 
 ```text
 aagl/
-├── SPECIFICATION.md          # Detailed technical specification of the AAGL standard
-├── docs/                     # Architecture Decision Records (ADRs)
-├── schemas/                  # JSON Schemas for Universal Graph and Strict CAD Profile
+├── SPECIFICATION_en.md       # Technical specification (English)
+├── SPECIFICATION_ru.md       # Technical specification (Russian)
+├── example_cad_floorplan/    # Sample .aagl project (arch_floorplan_v0.1 — 4×5 m room with walls/window/door)
+│   ├── manifest.json         # Routing table + profile declaration + OCC anchors
+│   ├── schema.json           # *Bundle schema*: (A) AAGL Container Layer structural rules
+│   │                         #                (B) View-theme mechanism structural rules
+│   │                         #                (C) arch_floorplan_v0.1 profile semantic metadata contracts
+│   ├── chunks/chunk_genesis.json
+│   └── views/default_theme.json
 ├── crates/                   # Rust Workspace (Core Engine)
 │   ├── aagl-core/            # Graph engine, JSON Patch (RFC 6902), and validation
 │   ├── aagl-container/       # .aagl ZIP container manager & chunk loader
 │   └── aagl-cli/             # CLI utilities (pack/unpack, git-hooks helper)
 ├── bindings/                 # Language integrations (Python via PyO3)
-├── examples/                 # Sample architectural .aagl projects
 └── tests/                    # Integration and multi-agent concurrency tests
 ```
 📦 The .aagl Container Format
@@ -35,10 +40,12 @@ Instead of massive monolithic files or unmanageable folder trees, an .aagl proje
 Plaintext
 project.aagl (ZIP Container)
 ├── manifest.json             # Global routing table, spatial_index, version hashes, and base units
-├── schema.json               # Active profile validation rules
+├── schema.json               # Active profile *bundle-schema*: container structural rules + profile metadata rules
 ├── chunks/                   # Sharded sub-graphs (50-100 KB chunks for efficient LLM context)
-│   ├── floor_01.json
-│   └── floor_02.json
+│   ├── chunk_genesis.json    # Mandatory identity-root chunk with global bounds
+│   └── sector_01.json
+├── views/                    # Presentation strategies (style themes — not part of OCC data hashes)
+│   └── default_theme.json
 └── assets/                   # Binary resources (textures, floor plan scans, point clouds)
 ```
 🛠️ Tech Stack

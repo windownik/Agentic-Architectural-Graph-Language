@@ -1,134 +1,229 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://aagl.dev/profiles/arch_floorplan_v0.1/schema.json",
-  "title": "AAGL Profile — Architectural Floorplan v0.1",
-  "description": "Profile-level schema for 2D/3D architectural floor plans. Defines node discriminators, coords layouts, and metadata contracts for: ground, wall, window, ceiling, door. Container-level fields (parent_id, coords, relations, metadata) are validated separately by universal-graph.json.",
+  "$id": "https://aagl.dev/profiles/arch_floorplan_v0.1/bundle-schema.json",
+  "title": "AAGL Bundle Schema — arch_floorplan_v0.1",
+  "description": "Complete self-contained validator for profile arch_floorplan_v0.1. Bundles THREE layers into one file:\n (A) AAGL CONTAINER LAYER — structural invariants for chunks/nodes/relations (normative per AAGL Spec § 5.3, § 5.4, § 5.5). These constraints are type-blind and profile-agnostic; they are what the Rust core engine enforces.\n (B) AAGL THEME MECHANISM LAYER — structural invariants for views/*.json (normative per AAGL Spec § 8.1). Again profile-agnostic.\n (C) PROFILE arch_floorplan_v0.1 — semantic metadata contracts (what fields go in metadata for each node type) and coords layout registry hints.\n When validating a chunk file, use $defs/chunk (oneOf picks correct metadata branch via profile_type). When validating a theme file, use $defs/theme.",
   "version": "0.1.0",
-  "definitions": {
-    "profile_type": {
-      "type": "string",
-      "enum": ["container_root", "ground", "wall", "window", "ceiling", "door"],
-      "description": "Discriminator key routed via manifest.profile.view_type_key = metadata.profile_type."
-    },
-    "node_container_root": {
+  "$defs": {
+    "relation": {
       "type": "object",
-      "required": ["profile_type"],
+      "required": ["target", "target_chunk", "rel_type"],
+      "additionalProperties": false,
       "properties": {
-        "profile_type": { "const": "container_root" },
-        "label": { "type": "string" },
-        "project_code": { "type": "string" },
-        "floor_index": { "type": "integer", "minimum": -20, "maximum": 200, "description": "0 = ground floor. -1 = basement 1." }
-      },
-      "additionalProperties": false
-    },
-    "node_ground": {
-      "type": "object",
-      "required": ["profile_type", "material_code"],
-      "properties": {
-        "profile_type": { "const": "ground" },
-        "label": { "type": "string", "examples": ["Черновой пол", "Пол кухни"] },
-        "material_code": {
+        "target":       { "type": "string", "description": "node_id of destination (§ 5.4)" },
+        "target_chunk": { "type": "string", "description": "chunk_id hosting the destination — cross-chunk routing via manifest.spatial_index (§ 5.4)" },
+        "rel_type": {
           "type": "string",
-          "examples": ["concrete_screed", "laminate_32", "tile_ceramic_porcelain"]
-        },
-        "finish_code": {
-          "type": "string",
-          "description": "Optional finish/layer on top of material.",
-          "examples": ["epoxy_clear", "parquet_oak_rustic"]
+          "enum": ["directed", "symmetric", "control", "dependent"],
+          "description": "Allowed codes (§ 5.4). A profile MAY override this list via manifest.profile.core_hints.relation_codes; when so, edit this enum."
         }
-      },
-      "additionalProperties": false
+      }
     },
-    "node_wall": {
-      "type": "object",
-      "required": ["profile_type", "material_code", "thickness_mm"],
-      "properties": {
-        "profile_type": { "const": "wall" },
-        "label": { "type": "string", "examples": ["Несущая стена M2", "Перегородка"] },
-        "material_code": {
-          "type": "string",
-          "examples": ["brick_250_ceramic", "aerated_concrete_300", "partition_gkl_100"]
+    "node_metadata_arch": {
+      "description": "Semantic contract for metadata per node type (Profile arch_floorplan_v0.1 layer C). Which branch applies is chosen by node.metadata.profile_type.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["profile_type"],
+          "additionalProperties": false,
+          "properties": {
+            "profile_type": { "const": "container_root" },
+            "label":        { "type": "string" },
+            "project_code": { "type": "string" },
+            "floor_index":  { "type": "integer", "minimum": -20, "maximum": 200, "description": "0 = ground floor. -1 = basement 1." }
+          }
         },
-        "thickness_mm": { "type": "integer", "minimum": 40, "maximum": 1000, "examples": [100, 250, 300] },
-        "is_load_bearing": { "type": "boolean", "default": false },
-        "is_external": { "type": "boolean", "default": false, "description": "True for outer/weather-exposed walls." }
-      },
-      "additionalProperties": false
-    },
-    "node_window": {
-      "type": "object",
-      "required": ["profile_type", "frame_material", "glazing_type", "sill_height_mm", "width_mm", "height_mm"],
-      "properties": {
-        "profile_type": { "const": "window" },
-        "label": { "type": "string", "examples": ["Окно кухни 1.5x1.2"] },
-        "frame_material": {
-          "type": "string",
-          "enum": ["pvc_white", "pvc_woodgrain", "aluminum_anodized", "wood_oak", "wood_pine"]
+        {
+          "type": "object",
+          "required": ["profile_type", "material_code"],
+          "additionalProperties": false,
+          "properties": {
+            "profile_type": { "const": "ground" },
+            "label":        { "type": "string", "examples": ["Черновой пол", "Пол кухни"] },
+            "material_code":{
+              "type": "string",
+              "examples": ["concrete_screed", "laminate_32", "tile_ceramic_porcelain"]
+            },
+            "finish_code":  {
+              "type": "string",
+              "description": "Optional finish/layer on top of material.",
+              "examples": ["epoxy_clear", "parquet_oak_rustic"]
+            }
+          }
         },
-        "glazing_type": { "type": "string", "enum": ["single", "double", "triple"] },
-        "sill_height_mm": { "type": "integer", "minimum": 0, "maximum": 2500, "description": "Distance from finished floor to bottom of window glass.", "default": 900 },
-        "width_mm": { "type": "integer", "minimum": 200, "maximum": 6000 },
-        "height_mm": { "type": "integer", "minimum": 300, "maximum": 4000 },
-        "sash_count": { "type": "integer", "minimum": 1, "maximum": 5, "default": 1 }
-      },
-      "additionalProperties": false
-    },
-    "node_ceiling": {
-      "type": "object",
-      "required": ["profile_type", "material_code"],
-      "properties": {
-        "profile_type": { "const": "ceiling" },
-        "label": { "type": "string", "examples": ["Натяжной потолок", "Подшивной ГКЛ"] },
-        "material_code": {
-          "type": "string",
-          "examples": ["suspended_gkl_12.5", "stretch_matte_pvc", "plastered_monolith"]
+        {
+          "type": "object",
+          "required": ["profile_type", "material_code", "thickness_mm"],
+          "additionalProperties": false,
+          "properties": {
+            "profile_type":  { "const": "wall" },
+            "label":         { "type": "string", "examples": ["Несущая стена M2", "Перегородка"] },
+            "material_code": {
+              "type": "string",
+              "examples": ["brick_250_ceramic", "aerated_concrete_300", "partition_gkl_100"]
+            },
+            "thickness_mm":  { "type": "integer", "minimum": 40, "maximum": 1000, "examples": [100, 250, 300] },
+            "is_load_bearing":{ "type": "boolean", "default": false },
+            "is_external":   { "type": "boolean", "default": false, "description": "True for outer/weather-exposed walls." }
+          }
         },
-        "finish_code": {
-          "type": "string",
-          "examples": ["paint_matte_ral9010", "gloss_white_laminate"]
+        {
+          "type": "object",
+          "required": ["profile_type", "frame_material", "glazing_type", "sill_height_mm", "width_mm", "height_mm"],
+          "additionalProperties": false,
+          "properties": {
+            "profile_type":   { "const": "window" },
+            "label":          { "type": "string", "examples": ["Окно кухни 1.5x1.2"] },
+            "frame_material": {
+              "type": "string",
+              "enum": ["pvc_white", "pvc_woodgrain", "aluminum_anodized", "wood_oak", "wood_pine"]
+            },
+            "glazing_type":   { "type": "string", "enum": ["single", "double", "triple"] },
+            "sill_height_mm": { "type": "integer", "minimum": 0, "maximum": 2500, "description": "Distance from finished floor to bottom of window glass.", "default": 900 },
+            "width_mm":       { "type": "integer", "minimum": 200, "maximum": 6000 },
+            "height_mm":      { "type": "integer", "minimum": 300, "maximum": 4000 },
+            "sash_count":     { "type": "integer", "minimum": 1, "maximum": 5, "default": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["profile_type", "material_code"],
+          "additionalProperties": false,
+          "properties": {
+            "profile_type":  { "const": "ceiling" },
+            "label":         { "type": "string", "examples": ["Натяжной потолок", "Подшивной ГКЛ"] },
+            "material_code": {
+              "type": "string",
+              "examples": ["suspended_gkl_12.5", "stretch_matte_pvc", "plastered_monolith"]
+            },
+            "finish_code":   {
+              "type": "string",
+              "examples": ["paint_matte_ral9010", "gloss_white_laminate"]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["profile_type", "leaf_material", "frame_material", "width_mm", "height_mm", "direction", "handle_side"],
+          "additionalProperties": false,
+          "properties": {
+            "profile_type": { "const": "door" },
+            "label":        { "type": "string", "examples": ["Входная дверь", "Межкомнатная 27"] },
+            "leaf_material":{
+              "type": "string",
+              "enum": ["mdf_veneered", "solid_oak", "solid_pine", "glass_tempered", "steel_armored"]
+            },
+            "frame_material":{
+              "type": "string",
+              "enum": ["wood_mdf", "wood_solid", "aluminum", "steel"]
+            },
+            "width_mm":    { "type": "integer", "minimum": 500, "maximum": 2000 },
+            "height_mm":   { "type": "integer", "minimum": 1800, "maximum": 2700 },
+            "direction":   { "type": "string", "enum": ["inward", "outward"] },
+            "handle_side": { "type": "string", "enum": ["left", "right"] },
+            "threshold_mm":{ "type": "integer", "minimum": 0, "maximum": 120, "default": 15, "description": "0 = flush/threshold-free." }
+          }
         }
-      },
-      "additionalProperties": false
+      ]
     },
-    "node_door": {
+    "node": {
+      "description": "AAGL Container Layer § 5.3 — every node exposes exactly four required structural keys. Any other top-level keys are profile-defined extensions and ignored by Rust core.",
       "type": "object",
-      "required": ["profile_type", "leaf_material", "frame_material", "width_mm", "height_mm", "direction", "handle_side"],
+      "required": ["parent_id", "coords", "relations", "metadata"],
+      "additionalProperties": true,
       "properties": {
-        "profile_type": { "const": "door" },
-        "label": { "type": "string", "examples": ["Входная дверь", "Межкомнатная 27"] },
-        "leaf_material": {
+        "parent_id": {
           "type": "string",
-          "enum": ["mdf_veneered", "solid_oak", "solid_pine", "glass_tempered", "steel_armored"]
+          "description": "§ 5.3: Hierarchical ownership pointer. Root nodes MUST use literal string \"genesis\" (never null). Core walks this tree for cascade-delete."
         },
-        "frame_material": {
-          "type": "string",
-          "enum": ["wood_mdf", "wood_solid", "aluminum", "steel"]
+        "coords": {
+          "type": "array",
+          "items": { "type": "integer", "format": "int64" },
+          "description": "§ 4: Flat list of 64-bit signed integers. Layout/meaning (AABB, quad 4-pt, packed vertices) is Profile-defined — see manifest.profile.core_hints.coords_layout_registry in manifest.json for per-type layouts of this profile."
         },
-        "width_mm": { "type": "integer", "minimum": 500, "maximum": 2000 },
-        "height_mm": { "type": "integer", "minimum": 1800, "maximum": 2700 },
-        "direction": { "type": "string", "enum": ["inward", "outward"] },
-        "handle_side": { "type": "string", "enum": ["left", "right"] },
-        "threshold_mm": { "type": "integer", "minimum": 0, "maximum": 120, "default": 15, "description": "0 = flush/threshold-free." }
-      },
-      "additionalProperties": false
+        "relations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/relation" },
+          "description": "§ 5.3: Non-hierarchical cross-node pointers with 3-field structural contract (§ 5.4). Semantics of rel_type are Profile-defined."
+        },
+        "metadata": {
+          "$ref": "#/$defs/node_metadata_arch",
+          "description": "For THIS profile arch_floorplan_v0.1: one of the six metadata_arch branches above, selected by metadata.profile_type. § 5.3 Container layer requires zero keys here; all shape rules come from the profile contract embedded in this schema."
+        }
+      }
     },
-    "metadata_discriminator": {
+    "chunk": {
+      "description": "AAGL Container Layer § 5 — sharded sub-graph file. § 5.1: three required top-level keys. § 5.2: bounds REQUIRED for chunk_genesis (6-element i64 AABB).",
       "type": "object",
-      "required": ["profile_type"],
+      "required": ["chunk_id", "version", "nodes"],
+      "additionalProperties": false,
       "properties": {
-        "profile_type": { "$ref": "#/definitions/profile_type" }
+        "chunk_id": { "type": "string", "description": "Unique id, matches manifest routing key (§ 5.1)." },
+        "version":  { "type": "integer", "minimum": 1, "description": "Monotonic chunk-level version counter for OCC (§ 5.1, § 6)." },
+        "bounds":   {
+          "type": "array",
+          "items": { "type": "integer", "format": "int64" },
+          "minItems": 6,
+          "maxItems": 6,
+          "description": "§ 5.1 / § 5.2: Optional AABB [x_min,y_min,z_min, x_max,y_max,z_max]. REQUIRED for chunk_genesis."
+        },
+        "nodes": {
+          "type": "object",
+          "description": "Map from node_id to node (§ 5.1).",
+          "additionalProperties": { "$ref": "#/$defs/node" }
+        }
+      }
+    },
+    "theme_style_rule": {
+      "description": "Profile arch_floorplan_v0.1 style-rule contract. Keys are: stroke_color_hex, line_weight_mm, line_dash_code, fill_color_hex, hatch_ordinal, hatch_scale, label_text_template, label_font_size_mm, label_anchor_ordinal. Mirror of manifest.profile.view_style_schema in manifest.json.",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "stroke_color_hex":    { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$" },
+        "line_weight_mm":      { "type": "number", "minimum": 0.05, "maximum": 5.0 },
+        "line_dash_code":      { "type": "string", "enum": ["solid", "dashed_short", "dashed_long", "dotdash", "dotted"] },
+        "fill_color_hex":      { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$" },
+        "hatch_ordinal":       { "type": "integer", "minimum": 0, "maximum": 7 },
+        "hatch_scale":         { "type": "number", "minimum": 0.5, "maximum": 50 },
+        "label_text_template": { "type": "string" },
+        "label_font_size_mm":  { "type": "number", "minimum": 0.5, "maximum": 50 },
+        "label_anchor_ordinal":{ "type": "integer", "minimum": 0, "maximum": 8 }
+      }
+    },
+    "theme": {
+      "description": "AAGL Container Layer § 8.1 — three-tier view theme mechanism (profile-agnostic structural shape, plus profile-owned style rule keys above).",
+      "type": "object",
+      "required": ["theme_id", "theme_name", "spec_version"],
+      "additionalProperties": true,
+      "properties": {
+        "theme_id":     { "type": "string", "description": "§ 8.1 / § 3.3: routing key in manifest.views.registered." },
+        "theme_name":   { "type": "string", "description": "§ 8.1: human-readable display name for UIs." },
+        "spec_version": {
+          "type": "string",
+          "pattern": "^0\\.1\\.0$",
+          "description": "§ 8.1: AAGL container spec version this theme structure conforms to."
+        },
+        "description":  { "type": "string" },
+        "fallback":     {
+          "$ref": "#/$defs/theme_style_rule",
+          "description": "§ 8.1 — Lowest-priority tier. Whole-theme defaults. Applied per-field shallow merge: keys not present in by_type/by_id fall through to here."
+        },
+        "by_type": {
+          "type": "object",
+          "description": "§ 8.1 — Middle-priority tier. Keys are discriminator values resolved via manifest.profile.view_type_key (this profile uses metadata.profile_type). Applied per-field: missing keys fall through to fallback.",
+          "additionalProperties": { "$ref": "#/$defs/theme_style_rule" }
+        },
+        "by_id": {
+          "type": "object",
+          "description": "§ 8.1 — Highest-priority tier. Keys are exact node_id strings. Applied per-field: missing keys fall through to by_type, then fallback.",
+          "additionalProperties": { "$ref": "#/$defs/theme_style_rule" }
+        }
       }
     }
   },
-  "type": "object",
-  "title": "Root-node profile validator (applied per node)",
-  "description": "This schema is the profile's validation contract. For each node in any chunk, extract node.metadata and validate against the oneOf branch selected by node.metadata.profile_type.",
+
   "oneOf": [
-    { "$ref": "#/definitions/node_container_root" },
-    { "$ref": "#/definitions/node_ground" },
-    { "$ref": "#/definitions/node_wall" },
-    { "$ref": "#/definitions/node_window" },
-    { "$ref": "#/definitions/node_ceiling" },
-    { "$ref": "#/definitions/node_door" }
+    { "$ref": "#/$defs/chunk" },
+    { "$ref": "#/$defs/theme" }
   ]
 }

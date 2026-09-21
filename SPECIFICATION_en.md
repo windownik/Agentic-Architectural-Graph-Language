@@ -239,7 +239,7 @@ The container standard defines the **mechanism** of view theming (file placement
 
 ### 8.1 Resolution Mechanism — Three Tiers, Per-Key Shallow Merge
 
-Every theme JSON under `views/` is required to have the following top-level structural keys (from `schemas/view-theme.json`): `theme_id`, `theme_name`, `spec_version`. It additionally declares zero or more of: `fallback`, `by_type`, `by_id`.
+Every theme JSON under `views/` is required to have the following top-level structural keys: `theme_id`, `theme_name`, `spec_version` (normative invariants § 8.1). It additionally declares zero or more of: `fallback`, `by_type`, `by_id`. Concretely, these three required keys plus the three-tier structural shape are bundled as the `$defs/theme` validator inside each profile's own `schema.json` (see Profile/Protocol layer), so that a profile carries both its data-structure and its theme-structure validators as a self-contained bundle.
 
 When a renderer resolves the style of a node, it performs:
 
