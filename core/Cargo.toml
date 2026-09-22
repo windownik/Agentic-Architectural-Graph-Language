@@ -1,0 +1,30 @@
+[package]
+name = "aagl-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["AAGL Contributors"]
+description = "Core storage and mutation engine for the Agentic Architectural Graph Language"
+
+[lib]
+name = "aagl_core"
+path = "src/lib.rs"
+# cdylib → .so (Linux) / .dylib (macOS) / .dll (Windows) — for Python ctypes
+# rlib   → Rust crate consumer (normal Rust usage)
+# staticlib → .a / .lib for static linking into C/C++ apps
+crate-type = ["cdylib", "rlib", "staticlib"]
+
+[features]
+# Enable FFI exports (C ABI). Turn on when compiling shared lib for Python.
+ffi = []
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+zip = "0.6"
+sha2 = "0.10"
+hex = "0.4"
+json-patch = "1.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+tempfile = "3.8"
