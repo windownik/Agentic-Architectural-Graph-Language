@@ -9,10 +9,13 @@
 //! Public sub-modules:
 //!   * `hash`    — sha256_hex / sha256_canonical_json helpers
 //!   * `storage` — unified StorageBackend trait + FolderBackend / ZipBackend impls + zip_folder()
+//!   * `open_storage` — auto-pick Folder vs ZIP backend based on on-disk file type
 
 pub mod hash;
 pub mod storage;
+pub mod open_storage;
 
 // ─── Flat re-exports (most common usage).
 pub use hash::{sha256_canonical_json, sha256_hex};
-pub use storage::{FolderBackend, StorageBackend, ZipBackend, zip_folder};
+pub use storage::{AnyStorage, FolderBackend, StorageBackend, ZipBackend, zip_folder};
+pub use open_storage::open_storage;

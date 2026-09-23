@@ -10,7 +10,9 @@
 
 pub mod initializer;
 pub mod commands;
+pub mod node_manager;
 
 // ─── Flat re-exports of the most-used entries
 pub use initializer::create_empty_project;
 pub use commands::*;
+pub use node_manager::{add_object, delete_object, update_object};

@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 /// §5.4 Cross-node link (source node owns this vec, target is addressable via
 /// `(target_chunk, target)` pair + spatial_index).
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Relation {
     pub target: String,
     pub target_chunk: String,
@@ -14,7 +14,7 @@ pub struct Relation {
 }
 
 /// §5.3 Universal Graph Node: exactly 4 public fields. No extras.
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Node {
     pub parent_id: String,
     pub coords: Vec<i64>,
@@ -23,7 +23,7 @@ pub struct Node {
 }
 
 /// §5 chunks/*.json container: versioned, optionally bounded, map of nodes.
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Chunk {
     pub chunk_id: String,
     pub version: u64,

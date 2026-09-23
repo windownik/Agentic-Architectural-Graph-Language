@@ -1,0 +1,43 @@
+{
+  "spec_version": "0.1.0",
+  "project_name": "CAD Demo — Walls + Window",
+  "state_hash": "sha256:48387075aa1ec2d0080b067bea1cf88d39bee5e662ed4db86ca1dd45b6b0de42",
+  "global_version": 5,
+  "profile": {
+    "id": "generic_spatial_v0",
+    "schema_path": "./schema.json",
+    "view_type_key": "metadata.profile_key",
+    "core_hints": {
+      "relation_codes": [
+        "directed",
+        "symmetric",
+        "control",
+        "dependent"
+      ]
+    }
+  },
+  "units": {
+    "base_unit": "mm",
+    "internal_resolution_to_meters": 0.001
+  },
+  "chunks": {
+    "chunk_genesis": {
+      "path": "./chunks/chunk_genesis.json",
+      "hash": "sha256:c8073f505febf5a309f1769a0d0ee0016e859ec91744b5ad95077c29e4c9b6d6",
+      "version": 5
+    }
+  },
+  "views": {
+    "active_theme": "default_minimal",
+    "registered": {
+      "default_minimal": {
+        "path": "./views/default_theme.json",
+        "hash": "sha256:d6b470df1f468905b6cd41818f674fddf96f6c1650bd3900b6431ffeb80313d2",
+        "version": 1
+      }
+    }
+  },
+  "spatial_index": {
+    "node_0001": "chunk_genesis"
+  }
+}

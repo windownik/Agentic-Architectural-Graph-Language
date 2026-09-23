@@ -1,0 +1,20 @@
+{
+  "theme_id": "default_minimal",
+  "theme_name": "Default Minimal",
+  "spec_version": "0.1.0",
+  "fallback": {
+    "stroke_width": 2,
+    "opacity": 1.0,
+    "color": "#444444"
+  },
+  "by_type": {
+    "container_root": {
+      "stroke_dash": [
+        6,
+        4
+      ],
+      "color": "#2563eb"
+    }
+  },
+  "by_id": {}
+}

@@ -295,3 +295,50 @@ pub fn zip_folder(src_folder: &Path, dst_aagl: &Path) -> Result<()> {
     zip.finish()?;
     Ok(())
 }
+
+// ==========================================================================
+// Type-erased enum dispatcher (replaces `Box<dyn StorageBackend>` because
+// trait methods are generic over `<T: Serialize/Deserialize>` → NOT object-safe,
+// no vtable possible). Static dispatch via match = 0-cost, fully compatible.
+// ==========================================================================
+
+/// Either backend wrapped. Use this everywhere you need "backend unknown at compile time".
+pub enum AnyStorage {
+    Folder(FolderBackend),
+    Zip(ZipBackend),
+}
+
+impl AnyStorage {
+    /// Convenience: unwraps FolderBackend if variant matches.
+    pub fn as_folder(&self) -> Option<&FolderBackend> {
+        match self { Self::Folder(x) => Some(x), _ => None }
+    }
+    /// Convenience: unwraps ZipBackend if variant matches.
+    pub fn as_zip(&self) -> Option<&ZipBackend> {
+        match self { Self::Zip(x) => Some(x), _ => None }
+    }
+}
+
+impl StorageBackend for AnyStorage {
+    fn db_path(&self) -> &Path {
+        match self { Self::Folder(x) => x.db_path(), Self::Zip(x) => x.db_path() }
+    }
+    fn read_file(&self, p: &str) -> Result<Vec<u8>> {
+        match self { Self::Folder(x) => x.read_file(p), Self::Zip(x) => x.read_file(p) }
+    }
+    fn write_file(&mut self, p: &str, b: &[u8]) -> Result<()> {
+        match self { Self::Folder(x) => x.write_file(p, b), Self::Zip(x) => x.write_file(p, b) }
+    }
+    fn file_exists(&self, p: &str) -> Result<bool> {
+        match self { Self::Folder(x) => x.file_exists(p), Self::Zip(x) => x.file_exists(p) }
+    }
+    fn flush(&mut self) -> Result<()> {
+        match self { Self::Folder(x) => x.flush(), Self::Zip(x) => x.flush() }
+    }
+    fn read_json<T: DeserializeOwned>(&self, p: &str) -> Result<T> {
+        match self { Self::Folder(x) => x.read_json(p), Self::Zip(x) => x.read_json(p) }
+    }
+    fn write_json<T: Serialize>(&mut self, p: &str, v: &T) -> Result<()> {
+        match self { Self::Folder(x) => x.write_json(p, v), Self::Zip(x) => x.write_json(p, v) }
+    }
+}

@@ -54,7 +54,8 @@ pub use domain::{
 
 // ─── Infrastructure (hash + storage backends) ─────────────────────────────
 pub use infrastructure::{
-    FolderBackend, StorageBackend, ZipBackend, sha256_canonical_json, sha256_hex, zip_folder,
+    AnyStorage, FolderBackend, StorageBackend, ZipBackend, open_storage,
+    sha256_canonical_json, sha256_hex, zip_folder,
 };
 
 // ─── Application (use cases) ──────────────────────────────────────────────
@@ -70,6 +71,9 @@ pub use application::commands::{
     resolve_style, set_node_coords, set_node_metadata, set_node_parent, validate_hashes,
     validate_structure, verify_occ,
 };
+
+// ─── Working v1 node mutations (single-chunk implementation, done):
+pub use application::{add_object, delete_object, update_object};
 
 // ==========================================================================
 // 3. TOP-LEVEL ANCHOR-STYLE FACADE FUNCTIONS  (thin wrappers with defaults)
