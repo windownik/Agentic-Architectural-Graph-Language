@@ -1,0 +1,43 @@
+{
+  "spec_version": "0.1.0",
+  "project_name": "My First AAGL Project",
+  "state_hash": "sha256:d3aa857175af0debfb793656cf2213790c5d67a41b822fae01a3f6ea70c3b94e",
+  "global_version": 1,
+  "profile": {
+    "id": "generic_spatial_v0",
+    "schema_path": "./schema.json",
+    "view_type_key": "metadata.profile_key",
+    "core_hints": {
+      "relation_codes": [
+        "directed",
+        "symmetric",
+        "control",
+        "dependent"
+      ]
+    }
+  },
+  "units": {
+    "base_unit": "mm",
+    "internal_resolution_to_meters": 0.001
+  },
+  "chunks": {
+    "chunk_genesis": {
+      "path": "./chunks/chunk_genesis.json",
+      "hash": "sha256:a1789689d96d25bb9023b8903065fe1947956d2c87fac5446d85fe206c5f1e75",
+      "version": 1
+    }
+  },
+  "views": {
+    "active_theme": "default_minimal",
+    "registered": {
+      "default_minimal": {
+        "path": "./views/default_theme.json",
+        "hash": "sha256:09c63994bf35d4627a79a8563d6b99dc870dbb6e6a2c461c8f5a9d9b22bbe31b",
+        "version": 1
+      }
+    }
+  },
+  "spatial_index": {
+    "node_0001": "chunk_genesis"
+  }
+}

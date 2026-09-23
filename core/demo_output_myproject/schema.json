@@ -1,0 +1,7 @@
+{
+  "$id": "aagl://profiles/generic_spatial_v0/schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Override this with your profile schema. Core never validates against it.",
+  "title": "Generic Spatial Profile (Placeholder Schema)",
+  "type": "object"
+}

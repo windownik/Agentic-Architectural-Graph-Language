@@ -1,0 +1,31 @@
+{
+  "chunk_id": "chunk_genesis",
+  "version": 1,
+  "bounds": [
+    -500000,
+    -500000,
+    -500000,
+    500000,
+    500000,
+    500000
+  ],
+  "nodes": {
+    "node_0001": {
+      "parent_id": "genesis",
+      "coords": [
+        -500000,
+        -500000,
+        -500000,
+        500000,
+        500000,
+        500000
+      ],
+      "relations": [],
+      "metadata": {
+        "label": "Global Envelope (space 1000000 units)",
+        "profile_key": "container_root",
+        "space_size": 1000000
+      }
+    }
+  }
+}

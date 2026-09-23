@@ -25,6 +25,8 @@ sha2 = "0.10"
 hex = "0.4"
 json-patch = "1.0"
 thiserror = "1.0"
+tempfile = "3.8"
 
 [dev-dependencies]
+# tempfile is also available in deps for production code (project creation uses tempdir)
 tempfile = "3.8"
